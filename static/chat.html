@@ -755,34 +755,72 @@
             }
 
             /* ── STT / Mic ── */
+            let mediaRecorder = null;
+            let audioChunks = [];
+
             async function startListening() {
                 if (micBtn.disabled) return;
 
-                micBtn.classList.add('listening');
-                micBtn.disabled = true;
-                sttStatus.className = 'visible';
-                sttStatusText.textContent = 'جارٍ الاستماع...';
+                // Second click: stop recording
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                    return;
+                }
 
+                // First click: start recording in the browser
                 try {
-                    const res = await fetch('/listen');
-                    const data = await res.json();
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioChunks = [];
+                    mediaRecorder = new MediaRecorder(stream);
 
-                    if (data.text) {
-                        input.value = data.text;
-                        input.dispatchEvent(new Event('input')); // trigger auto-resize
-                        input.focus();
-                    } else if (data.error) {
-                        sttStatus.className = 'visible error';
-                        sttStatusText.textContent = 'خطأ: ' + data.error;
-                        await new Promise(r => setTimeout(r, 3000));
-                    }
+                    micBtn.classList.add('listening');
+                    sttStatus.className = 'visible';
+                    sttStatusText.textContent = 'جارٍ الاستماع... (اضغط مجدداً للإيقاف)';
+
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) audioChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        stream.getTracks().forEach(t => t.stop());
+                        micBtn.classList.remove('listening');
+                        micBtn.disabled = true;
+                        sttStatus.className = 'visible';
+                        sttStatusText.textContent = 'جارٍ المعالجة...';
+
+                        try {
+                            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                            const formData = new FormData();
+                            formData.append('audio', blob, 'recording.webm');
+
+                            const res = await fetch('/transcribe', { method: 'POST', body: formData });
+                            const data = await res.json();
+
+                            if (data.text) {
+                                input.value = data.text;
+                                input.dispatchEvent(new Event('input'));
+                                input.focus();
+                            } else if (data.error) {
+                                sttStatus.className = 'visible error';
+                                sttStatusText.textContent = 'خطأ: ' + data.error;
+                                await new Promise(r => setTimeout(r, 3000));
+                            }
+                        } catch (err) {
+                            sttStatus.className = 'visible error';
+                            sttStatusText.textContent = 'تعذّر الاتصال بالخادم';
+                            await new Promise(r => setTimeout(r, 3000));
+                        } finally {
+                            micBtn.disabled = false;
+                            sttStatus.className = '';
+                        }
+                    };
+
+                    mediaRecorder.start();
+
                 } catch (err) {
                     sttStatus.className = 'visible error';
-                    sttStatusText.textContent = 'تعذّر الاتصال بالخادم';
+                    sttStatusText.textContent = 'لا يمكن الوصول إلى الميكروفون';
                     await new Promise(r => setTimeout(r, 3000));
-                } finally {
-                    micBtn.classList.remove('listening');
-                    micBtn.disabled = false;
                     sttStatus.className = '';
                 }
             }
