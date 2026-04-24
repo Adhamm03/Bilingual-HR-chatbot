@@ -5,11 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human Resource Advisor</title>
-    <script>
-        if (sessionStorage.getItem('auth') !== 'true') {
-            window.location.href = '/';
-        }
-    </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
@@ -41,81 +36,6 @@
             background: var(--bg);
             color: var(--text);
             height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 260px;
-            background: #0b0d13;
-            border-left: 1px solid var(--border);
-            padding: 16px 10px 16px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-
-        .new-chat-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-
-        .new-chat-btn:hover {
-            background: var(--surface-hover);
-        }
-
-        .conv-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .conv-list::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .conv-list::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        .conv-item {
-            padding: 10px 12px;
-            border-radius: 8px;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            cursor: pointer;
-            text-align: right;
-            border: 1px solid transparent;
-            transition: background 0.2s, color 0.2s;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .conv-item:hover,
-        .conv-item.active {
-            background: var(--surface-hover);
-            color: var(--text);
-        }
-
-        .app-shell {
-            flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -171,11 +91,11 @@
             animation: pulse 2s infinite;
         }
 
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 6px 12px;
+        .new-chat-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
             border-radius: 8px;
             font-size: 0.85rem;
             cursor: pointer;
@@ -183,20 +103,14 @@
             font-family: inherit;
         }
 
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
+        .new-chat-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text);
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: .4;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: .4; }
         }
 
         /* ── Chat area ── */
@@ -230,15 +144,8 @@
         }
 
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .msg.user {
@@ -306,19 +213,11 @@
             animation: bounce .6s infinite alternate;
         }
 
-        .typing span:nth-child(2) {
-            animation-delay: .15s;
-        }
-
-        .typing span:nth-child(3) {
-            animation-delay: .3s;
-        }
+        .typing span:nth-child(2) { animation-delay: .15s; }
+        .typing span:nth-child(3) { animation-delay: .3s; }
 
         @keyframes bounce {
-            to {
-                transform: translateY(-6px);
-                opacity: .4;
-            }
+            to { transform: translateY(-6px); opacity: .4; }
         }
 
         /* ── Welcome card ── */
@@ -494,13 +393,8 @@
             color: #ef4444;
         }
 
-        #sttStatus.visible {
-            display: flex;
-        }
-
-        #sttStatus.error {
-            color: #f97316;
-        }
+        #sttStatus.visible { display: flex; }
+        #sttStatus.error { color: #f97316; }
 
         .stt-dot {
             width: 7px;
@@ -513,370 +407,277 @@
 
         /* ── Responsive ── */
         @media (max-width: 600px) {
-            .msg {
-                max-width: 90%;
-            }
-
-            header {
-                padding: 14px 16px;
-            }
-
-            #chat {
-                padding: 16px 12px;
-            }
+            .msg { max-width: 90%; }
+            header { padding: 14px 16px; }
+            #chat { padding: 16px 12px; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <button class="new-chat-btn" onclick="newChat()">
-            <span style="font-size: 1.2rem;">+</span> دردشة جديدة
-        </button>
-        <div class="conv-list" id="convList">
-            <!-- Conversations will populate here -->
+    <header>
+        <div class="logo">HR</div>
+        <div>
+            <h1>Human Resource Advisor</h1>
+            <p>مستشار الموارد البشرية</p>
+        </div>
+        <div class="header-actions">
+            <span class="status-dot"></span>
+            <button class="new-chat-btn" onclick="newChat()">+ دردشة جديدة</button>
+        </div>
+    </header>
+
+    <div id="chat">
+        <div class="welcome" id="welcome">
+            <div class="welcome-icon">👥</div>
+            <h2>مرحباً بك</h2>
+            <p>اسأل أي سؤال حول اللائحة التنفيذية للموارد البشرية لإمارة الشارقة – باللغة العربية أو الإنجليزية.</p>
+            <div class="suggestions">
+                <button onclick="useSuggestion(this)">ما هي شروط التعيين؟</button>
+                <button onclick="useSuggestion(this)">What is the probation period?</button>
+                <button onclick="useSuggestion(this)">ما هي أنواع الإجازات؟</button>
+            </div>
         </div>
     </div>
 
-    <!-- Main Chat UI -->
-    <div class="app-shell">
-        <header>
-            <div class="logo">HR</div>
-            <div>
-                <h1>Human Resource Advisor</h1>
-                <p>مستشار الموارد البشرية</p>
-            </div>
-            <div class="header-actions">
-                <span class="status-dot" id="statusDot"></span>
-                <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div id="chat">
-            <div class="welcome" id="welcome">
-                <div class="welcome-icon">👥</div>
-                <h2>مرحباً بك</h2>
-                <p>اسأل أي سؤال حول اللائحة التنفيذية للموارد البشرية لإمارة الشارقة – باللغة العربية أو الإنجليزية.</p>
-                <div class="suggestions">
-                    <button onclick="useSuggestion(this)">ما هي شروط التعيين؟</button>
-                    <button onclick="useSuggestion(this)">What is the probation period?</button>
-                    <button onclick="useSuggestion(this)">ما هي أنواع الإجازات؟</button>
-                </div>
-            </div>
+    <div class="input-bar">
+        <div id="sttStatus">
+            <span class="stt-dot"></span>
+            <span id="sttStatusText">جارٍ الاستماع...</span>
         </div>
-
-        <div class="input-bar">
-            <div id="sttStatus">
-                <span class="stt-dot"></span>
-                <span id="sttStatusText">جارٍ الاستماع...</span>
-            </div>
-            <div class="input-row">
-                <textarea id="question" rows="1" placeholder="اكتب سؤالك هنا..." autofocus></textarea>
-                <button id="micBtn" onclick="startListening()" title="تحدث / Speak">🎙️</button>
-                <button id="send" onclick="ask()">➤</button>
-            </div>
+        <div class="input-row">
+            <textarea id="question" rows="1" placeholder="اكتب سؤالك هنا..." autofocus></textarea>
+            <button id="micBtn" onclick="startListening()" title="تحدث / Speak">🎙️</button>
+            <button id="send" onclick="ask()">➤</button>
         </div>
+    </div>
 
-        <script>
-            const chat = document.getElementById('chat');
-            const input = document.getElementById('question');
-            const sendBtn = document.getElementById('send');
-            const welcome = document.getElementById('welcome');
-            const convList = document.getElementById('convList');
-            const micBtn = document.getElementById('micBtn');
-            const sttStatus = document.getElementById('sttStatus');
-            const sttStatusText = document.getElementById('sttStatusText');
+    <script>
+        const chat = document.getElementById('chat');
+        const input = document.getElementById('question');
+        const sendBtn = document.getElementById('send');
+        const welcome = document.getElementById('welcome');
+        const micBtn = document.getElementById('micBtn');
+        const sttStatus = document.getElementById('sttStatus');
+        const sttStatusText = document.getElementById('sttStatusText');
 
-            let chatHistory = [];
-            let currentAudio = null;
-            let currentConversationId = null;
-            let username = sessionStorage.getItem('username');
+        let currentAudio = null;
 
-            // Initial Load
-            loadConversations();
+        /* ── Auto-resize textarea ── */
+        input.addEventListener('input', () => {
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+        });
 
-            /* ── Auto-resize textarea ── */
-            input.addEventListener('input', () => {
-                input.style.height = 'auto';
-                input.style.height = Math.min(input.scrollHeight, 120) + 'px';
-            });
+        /* ── Enter to send ── */
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); }
+        });
 
-            /* ── Enter to send ── */
-            input.addEventListener('keydown', e => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(); }
-            });
+        function useSuggestion(btn) {
+            input.value = btn.textContent;
+            ask();
+        }
 
-            /* ── Use suggestion ── */
-            function useSuggestion(btn) {
-                input.value = btn.textContent;
-                ask();
-            }
-
-            /* ── History Logic ── */
-            async function loadConversations() {
-                try {
-                    const res = await fetch(`/api/conversations?username=${encodeURIComponent(username)}`);
-                    if (res.ok) {
-                        const convs = await res.json();
-                        convList.innerHTML = '';
-                        convs.forEach(c => {
-                            const div = document.createElement('div');
-                            div.className = `conv-item ${c.id === currentConversationId ? 'active' : ''}`;
-                            div.textContent = c.title;
-                            div.onclick = () => selectConversation(c.id);
-                            convList.appendChild(div);
-                        });
-                    }
-                } catch (err) {
-                    console.error("Failed to load conversations", err);
-                }
-            }
-
-            async function selectConversation(id) {
-                currentConversationId = id;
-                if (welcome) welcome.style.display = 'none';
-                chat.innerHTML = ''; // Clear chat
-                loadConversations(); // Refresh active state in sidebar
-
-                try {
-                    const res = await fetch(`/api/conversations/${id}/messages`);
-                    if (res.ok) {
-                        const msgs = await res.json();
-                        chatHistory = [];
-                        msgs.forEach(m => {
-                            addMsg(m.content, m.role === 'user' ? 'user' : 'bot');
-                            chatHistory.push({ role: m.role, content: m.content });
-                        });
-                    }
-                } catch (err) {
-                    console.error("Failed to load messages", err);
-                }
-            }
-
-            function newChat() {
-                currentConversationId = null;
-                chatHistory = [];
-                chat.innerHTML = '';
-                if (welcome) welcome.style.display = 'block';
+        function newChat() {
+            chat.innerHTML = '';
+            if (welcome) {
+                welcome.style.display = 'block';
                 chat.appendChild(welcome);
-                loadConversations(); // Update active class
+            }
+        }
+
+        /* ── Add message bubble ── */
+        function addMsg(text, role) {
+            const div = document.createElement('div');
+            div.className = 'msg ' + role;
+
+            const textNode = document.createElement('span');
+            textNode.textContent = text;
+            div.appendChild(textNode);
+
+            if (role === 'bot') {
+                const ttsBtn = document.createElement('button');
+                ttsBtn.className = 'tts-btn';
+                ttsBtn.innerHTML = '🔊 استمع';
+                ttsBtn.title = 'Listen / استمع';
+                ttsBtn.onclick = () => playTTS(text, ttsBtn);
+                div.appendChild(document.createElement('br'));
+                div.appendChild(ttsBtn);
             }
 
-            /* ── Logout ── */
-            function logout() {
-                sessionStorage.removeItem('auth');
-                sessionStorage.removeItem('username');
-                window.location.href = '/';
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        /* ── TTS playback ── */
+        async function playTTS(text, btn) {
+            if (btn.classList.contains('playing') && currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                btn.classList.remove('playing');
+                btn.innerHTML = '🔊 استمع';
+                btn.disabled = false;
+                return;
             }
 
-            /* ── Add message bubble ── */
-            function addMsg(text, role) {
-                const div = document.createElement('div');
-                div.className = 'msg ' + role;
-
-                const textNode = document.createElement('span');
-                textNode.textContent = text;
-                div.appendChild(textNode);
-
-                if (role === 'bot') {
-                    const ttsBtn = document.createElement('button');
-                    ttsBtn.className = 'tts-btn';
-                    ttsBtn.innerHTML = '🔊 استمع';
-                    ttsBtn.title = 'Listen / استمع';
-                    ttsBtn.onclick = () => playTTS(text, ttsBtn);
-                    div.appendChild(document.createElement('br'));
-                    div.appendChild(ttsBtn);
-                }
-
-                chat.appendChild(div);
-                chat.scrollTop = chat.scrollHeight;
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
             }
 
-            /* ── TTS playback ── */
-            async function playTTS(text, btn) {
-                // If this button is already playing, stop it
-                if (btn.classList.contains('playing') && currentAudio) {
-                    currentAudio.pause();
-                    currentAudio = null;
-                    btn.classList.remove('playing');
-                    btn.innerHTML = '🔊 استمع';
-                    btn.disabled = false;
-                    return;
-                }
+            document.querySelectorAll('.tts-btn').forEach(b => {
+                b.classList.remove('playing');
+                b.innerHTML = '🔊 استمع';
+                b.disabled = false;
+            });
 
-                // Stop any other playing audio
-                if (currentAudio) {
-                    currentAudio.pause();
-                    currentAudio = null;
-                }
+            btn.innerHTML = '⏳ جارٍ التحميل...';
+            btn.disabled = true;
 
-                // Reset all TTS buttons
-                document.querySelectorAll('.tts-btn').forEach(b => {
-                    b.classList.remove('playing');
-                    b.innerHTML = '🔊 استمع';
-                    b.disabled = false;
+            try {
+                const res = await fetch('/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
                 });
 
-                btn.innerHTML = '⏳ جارٍ التحميل...';
-                btn.disabled = true;
+                if (!res.ok) throw new Error('TTS request failed');
 
-                try {
-                    const res = await fetch('/tts', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text })
-                    });
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                currentAudio = new Audio(url);
 
-                    if (!res.ok) throw new Error('TTS request failed');
+                btn.innerHTML = '⏹ إيقاف';
+                btn.disabled = false;
+                btn.classList.add('playing');
 
-                    const blob = await res.blob();
-                    const url = URL.createObjectURL(blob);
-                    currentAudio = new Audio(url);
+                currentAudio.play();
 
-                    btn.innerHTML = '⏹ إيقاف';
-                    btn.disabled = false;
-                    btn.classList.add('playing');
-
-                    currentAudio.play();
-
-                    currentAudio.onended = () => {
-                        btn.innerHTML = '🔊 استمع';
-                        btn.classList.remove('playing');
-                        currentAudio = null;
-                        URL.revokeObjectURL(url);
-                    };
-
-                } catch (err) {
-                    console.error('TTS error:', err);
+                currentAudio.onended = () => {
                     btn.innerHTML = '🔊 استمع';
-                    btn.disabled = false;
-                }
+                    btn.classList.remove('playing');
+                    currentAudio = null;
+                    URL.revokeObjectURL(url);
+                };
+
+            } catch (err) {
+                console.error('TTS error:', err);
+                btn.innerHTML = '🔊 استمع';
+                btn.disabled = false;
+            }
+        }
+
+        /* ── STT / Mic ── */
+        let mediaRecorder = null;
+        let audioChunks = [];
+
+        async function startListening() {
+            if (micBtn.disabled) return;
+
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                return;
             }
 
-            /* ── STT / Mic ── */
-            let mediaRecorder = null;
-            let audioChunks = [];
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
 
-            async function startListening() {
-                if (micBtn.disabled) return;
+                micBtn.classList.add('listening');
+                sttStatus.className = 'visible';
+                sttStatusText.textContent = 'جارٍ الاستماع... (اضغط مجدداً للإيقاف)';
 
-                // Second click: stop recording
-                if (mediaRecorder && mediaRecorder.state === 'recording') {
-                    mediaRecorder.stop();
-                    return;
-                }
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
 
-                // First click: start recording in the browser
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    audioChunks = [];
-                    mediaRecorder = new MediaRecorder(stream);
-
-                    micBtn.classList.add('listening');
+                mediaRecorder.onstop = async () => {
+                    stream.getTracks().forEach(t => t.stop());
+                    micBtn.classList.remove('listening');
+                    micBtn.disabled = true;
                     sttStatus.className = 'visible';
-                    sttStatusText.textContent = 'جارٍ الاستماع... (اضغط مجدداً للإيقاف)';
+                    sttStatusText.textContent = 'جارٍ المعالجة...';
 
-                    mediaRecorder.ondataavailable = e => {
-                        if (e.data.size > 0) audioChunks.push(e.data);
-                    };
+                    try {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const formData = new FormData();
+                        formData.append('audio', blob, 'recording.webm');
 
-                    mediaRecorder.onstop = async () => {
-                        stream.getTracks().forEach(t => t.stop());
-                        micBtn.classList.remove('listening');
-                        micBtn.disabled = true;
-                        sttStatus.className = 'visible';
-                        sttStatusText.textContent = 'جارٍ المعالجة...';
+                        const res = await fetch('/transcribe', { method: 'POST', body: formData });
+                        const data = await res.json();
 
-                        try {
-                            const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                            const formData = new FormData();
-                            formData.append('audio', blob, 'recording.webm');
-
-                            const res = await fetch('/transcribe', { method: 'POST', body: formData });
-                            const data = await res.json();
-
-                            if (data.text) {
-                                input.value = data.text;
-                                input.dispatchEvent(new Event('input'));
-                                input.focus();
-                            } else if (data.error) {
-                                sttStatus.className = 'visible error';
-                                sttStatusText.textContent = 'خطأ: ' + data.error;
-                                await new Promise(r => setTimeout(r, 3000));
-                            }
-                        } catch (err) {
+                        if (data.text) {
+                            input.value = data.text;
+                            input.dispatchEvent(new Event('input'));
+                            input.focus();
+                        } else if (data.error) {
                             sttStatus.className = 'visible error';
-                            sttStatusText.textContent = 'تعذّر الاتصال بالخادم';
+                            sttStatusText.textContent = 'خطأ: ' + data.error;
                             await new Promise(r => setTimeout(r, 3000));
-                        } finally {
-                            micBtn.disabled = false;
-                            sttStatus.className = '';
                         }
-                    };
-
-                    mediaRecorder.start();
-
-                } catch (err) {
-                    sttStatus.className = 'visible error';
-                    sttStatusText.textContent = 'لا يمكن الوصول إلى الميكروفون';
-                    await new Promise(r => setTimeout(r, 3000));
-                    sttStatus.className = '';
-                }
-            }
-
-            /* ── Main ask function ── */
-            async function ask() {
-                const q = input.value.trim();
-                if (!q) return;
-
-                if (welcome) welcome.style.display = 'none';
-
-                addMsg(q, 'user');
-                input.value = '';
-                input.style.height = 'auto';
-                sendBtn.disabled = true;
-
-                // Typing indicator
-                const typing = document.createElement('div');
-                typing.className = 'msg bot typing';
-                typing.innerHTML = '<span></span><span></span><span></span>';
-                chat.appendChild(typing);
-                chat.scrollTop = chat.scrollHeight;
-
-                try {
-                    const res = await fetch('/ask', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            question: q,
-                            username: username,
-                            conversation_id: currentConversationId
-                            // (History array is intentionally left out to fit simple API spec but can be appended if needed by backend)
-                        })
-                    });
-                    const data = await res.json();
-
-                    chatHistory.push({ role: 'user', content: q });
-                    typing.remove();
-
-                    if (res.ok) {
-                        currentConversationId = data.conversation_id;
-                        addMsg(data.answer, 'bot');
-                        chatHistory.push({ role: 'assistant', content: data.answer });
-                        loadConversations(); // Refresh sidebar title if new!
-                    } else {
-                        addMsg('⚠️ ' + (data.detail || 'Something went wrong'), 'bot');
+                    } catch (err) {
+                        sttStatus.className = 'visible error';
+                        sttStatusText.textContent = 'تعذّر الاتصال بالخادم';
+                        await new Promise(r => setTimeout(r, 3000));
+                    } finally {
+                        micBtn.disabled = false;
+                        sttStatus.className = '';
                     }
-                } catch (err) {
-                    typing.remove();
-                    addMsg('⚠️ Could not reach the server. Is it running?', 'bot');
-                }
+                };
 
-                sendBtn.disabled = false;
-                input.focus();
+                mediaRecorder.start();
+
+            } catch (err) {
+                sttStatus.className = 'visible error';
+                sttStatusText.textContent = 'لا يمكن الوصول إلى الميكروفون';
+                await new Promise(r => setTimeout(r, 3000));
+                sttStatus.className = '';
             }
-        </script>
+        }
+
+        /* ── Main ask function ── */
+        async function ask() {
+            const q = input.value.trim();
+            if (!q) return;
+
+            if (welcome) welcome.style.display = 'none';
+
+            addMsg(q, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+            sendBtn.disabled = true;
+
+            const typing = document.createElement('div');
+            typing.className = 'msg bot typing';
+            typing.innerHTML = '<span></span><span></span><span></span>';
+            chat.appendChild(typing);
+            chat.scrollTop = chat.scrollHeight;
+
+            try {
+                const res = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q })
+                });
+                const data = await res.json();
+                typing.remove();
+
+                if (res.ok) {
+                    addMsg(data.answer, 'bot');
+                } else {
+                    addMsg('⚠️ ' + (data.detail || 'Something went wrong'), 'bot');
+                }
+            } catch (err) {
+                typing.remove();
+                addMsg('⚠️ Could not reach the server. Is it running?', 'bot');
+            }
+
+            sendBtn.disabled = false;
+            input.focus();
+        }
+    </script>
 </body>
 
 </html>
