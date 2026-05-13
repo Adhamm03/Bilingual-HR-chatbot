@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -419,23 +419,23 @@
         <div class="logo">HR</div>
         <div>
             <h1>Human Resource Advisor</h1>
-            <p>مستشار الموارد البشرية</p>
+            <p>Sharjah HR Law Assistant</p>
         </div>
         <div class="header-actions">
             <span class="status-dot"></span>
-            <button class="new-chat-btn" onclick="newChat()">+ دردشة جديدة</button>
+            <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
         </div>
     </header>
 
     <div id="chat">
         <div class="welcome" id="welcome">
             <div class="welcome-icon">👥</div>
-            <h2>مرحباً بك</h2>
-            <p>اسأل أي سؤال حول اللائحة التنفيذية للموارد البشرية لإمارة الشارقة – باللغة العربية أو الإنجليزية.</p>
+            <h2>Welcome</h2>
+            <p>Ask any question about Sharjah's HR Law – in Arabic or English.</p>
             <div class="suggestions">
-                <button onclick="useSuggestion(this)">ما هي شروط التعيين؟</button>
+                <button onclick="useSuggestion(this)">What are the hiring conditions?</button>
                 <button onclick="useSuggestion(this)">What is the probation period?</button>
-                <button onclick="useSuggestion(this)">ما هي أنواع الإجازات؟</button>
+                <button onclick="useSuggestion(this)">What are the types of leave?</button>
             </div>
         </div>
     </div>
@@ -443,11 +443,11 @@
     <div class="input-bar">
         <div id="sttStatus">
             <span class="stt-dot"></span>
-            <span id="sttStatusText">جارٍ الاستماع...</span>
+            <span id="sttStatusText">Listening...</span>
         </div>
         <div class="input-row">
-            <textarea id="question" rows="1" placeholder="اكتب سؤالك هنا..." autofocus></textarea>
-            <button id="micBtn" onclick="startListening()" title="تحدث / Speak">🎙️</button>
+            <textarea id="question" rows="1" placeholder="Type your question here..." autofocus></textarea>
+            <button id="micBtn" onclick="startListening()" title="Speak">🎙️</button>
             <button id="send" onclick="ask()">➤</button>
         </div>
     </div>
@@ -499,8 +499,8 @@
             if (role === 'bot') {
                 const ttsBtn = document.createElement('button');
                 ttsBtn.className = 'tts-btn';
-                ttsBtn.innerHTML = '🔊 استمع';
-                ttsBtn.title = 'Listen / استمع';
+                ttsBtn.innerHTML = '🔊 Listen';
+                ttsBtn.title = 'Listen';
                 ttsBtn.onclick = () => playTTS(text, ttsBtn);
                 div.appendChild(document.createElement('br'));
                 div.appendChild(ttsBtn);
@@ -516,7 +516,7 @@
                 currentAudio.pause();
                 currentAudio = null;
                 btn.classList.remove('playing');
-                btn.innerHTML = '🔊 استمع';
+                btn.innerHTML = '🔊 Listen';
                 btn.disabled = false;
                 return;
             }
@@ -528,11 +528,11 @@
 
             document.querySelectorAll('.tts-btn').forEach(b => {
                 b.classList.remove('playing');
-                b.innerHTML = '🔊 استمع';
+                b.innerHTML = '🔊 Listen';
                 b.disabled = false;
             });
 
-            btn.innerHTML = '⏳ جارٍ التحميل...';
+            btn.innerHTML = '⏳ Loading...';
             btn.disabled = true;
 
             try {
@@ -548,14 +548,14 @@
                 const url = URL.createObjectURL(blob);
                 currentAudio = new Audio(url);
 
-                btn.innerHTML = '⏹ إيقاف';
+                btn.innerHTML = '⏹ Stop';
                 btn.disabled = false;
                 btn.classList.add('playing');
 
                 currentAudio.play();
 
                 currentAudio.onended = () => {
-                    btn.innerHTML = '🔊 استمع';
+                    btn.innerHTML = '🔊 Listen';
                     btn.classList.remove('playing');
                     currentAudio = null;
                     URL.revokeObjectURL(url);
@@ -563,7 +563,7 @@
 
             } catch (err) {
                 console.error('TTS error:', err);
-                btn.innerHTML = '🔊 استمع';
+                btn.innerHTML = '🔊 Listen';
                 btn.disabled = false;
             }
         }
@@ -587,7 +587,7 @@
 
                 micBtn.classList.add('listening');
                 sttStatus.className = 'visible';
-                sttStatusText.textContent = 'جارٍ الاستماع... (اضغط مجدداً للإيقاف)';
+                sttStatusText.textContent = 'Listening... (click again to stop)';
 
                 mediaRecorder.ondataavailable = e => {
                     if (e.data.size > 0) audioChunks.push(e.data);
@@ -598,7 +598,7 @@
                     micBtn.classList.remove('listening');
                     micBtn.disabled = true;
                     sttStatus.className = 'visible';
-                    sttStatusText.textContent = 'جارٍ المعالجة...';
+                    sttStatusText.textContent = 'Processing...';
 
                     try {
                         const blob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -614,12 +614,12 @@
                             input.focus();
                         } else if (data.error) {
                             sttStatus.className = 'visible error';
-                            sttStatusText.textContent = 'خطأ: ' + data.error;
+                            sttStatusText.textContent = 'Error: ' + data.error;
                             await new Promise(r => setTimeout(r, 3000));
                         }
                     } catch (err) {
                         sttStatus.className = 'visible error';
-                        sttStatusText.textContent = 'تعذّر الاتصال بالخادم';
+                        sttStatusText.textContent = 'Could not connect to server';
                         await new Promise(r => setTimeout(r, 3000));
                     } finally {
                         micBtn.disabled = false;
@@ -631,7 +631,7 @@
 
             } catch (err) {
                 sttStatus.className = 'visible error';
-                sttStatusText.textContent = 'لا يمكن الوصول إلى الميكروفون';
+                sttStatusText.textContent = 'Cannot access microphone';
                 await new Promise(r => setTimeout(r, 3000));
                 sttStatus.className = '';
             }
