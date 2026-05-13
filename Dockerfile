@@ -20,5 +20,7 @@ COPY . .
 # Expose the API port
 EXPOSE 8080
 
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-large')"
+
 # Start the application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
