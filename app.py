@@ -14,7 +14,7 @@ from rag_engine import RAGEngine
 
 class TTSRequest(BaseModel):
     text: str
-    voice: str = "verse"
+    voice: str = "alloy"
     model: str = "tts-1"
 
 class AskRequest(BaseModel):
@@ -113,13 +113,21 @@ def ask(payload: AskRequest):
 
 @app.post("/tts")
 async def text_to_speech(payload: TTSRequest):
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    response = client.audio.speech.create(
-        model=payload.model,
-        voice=payload.voice,
-        input=payload.text
-    )
-    return StreamingResponse(io.BytesIO(response.content), media_type="audio/mpeg")
+    try:
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        response = client.audio.speech.create(
+            model=payload.model,
+            voice=payload.voice,
+            input=payload.text
+        )
+        audio_data = response.content
+        return StreamingResponse(
+            io.BytesIO(audio_data),
+            media_type="audio/mpeg",
+            headers={"Content-Length": str(len(audio_data))}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"TTS error: {str(e)}")
 
 
 @app.post("/transcribe")
@@ -133,7 +141,8 @@ async def transcribe_audio(audio: UploadFile = File(...)):
         result = client.audio.transcriptions.create(
             model="whisper-1",
             file=audio_buffer,
-            response_format="verbose_json"
+            response_format="verbose_json",
+            prompt="This assistant supports both English and Arabic. The user may speak in either language."
         )
 
         print(f"Detected Language: {result.language}")
