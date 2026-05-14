@@ -219,58 +219,26 @@ def normalize_arabic_text(text: str) -> str:
 
 class RAGEngine:
     def __init__(self, document_path: str, openai_api_key: str, max_chunk_size: int = 5000):
-        """Initialize RAG engine with document and API key"""
-        print("Loading and chunking document...")
-        
-        # Load document
-        with open(document_path, "r", encoding="utf-8") as f:
-            raw_text = f.read()
-        
-        # NEW: Use the improved chunking function
-        self.chunks = chunk_by_article_and_table(raw_text, normalize_numerals=True)
-        
-        # Normalize text in chunks
-        for c in self.chunks:
-            c.content = normalize_arabic_text(c.content)
-        
-        # NEW: Sub-chunk large articles
-        if max_chunk_size:
-            print(f"Sub-chunking articles larger than {max_chunk_size} characters...")
-            original_count = len(self.chunks)
-            self.chunks = sub_chunk_large_articles(self.chunks, max_chunk_size)
-            print(f"Chunks: {original_count} → {len(self.chunks)} (after sub-chunking)")
-        
-        # Print chunking summary
-        articles = sum(1 for c in self.chunks if c.metadata['type'] == 'article')
-        tables = sum(1 for c in self.chunks if c.metadata['type'] == 'table')
-        print(f"Total chunks: {len(self.chunks)} ({articles} articles, {tables} tables)")
-        
-        # Initialize embedder and FAISS
-        print("Creating embeddings...")
+        """Initialize RAG engine with pre-built index"""
+        import pickle
+        print("Loading pre-built FAISS index...")
         self.embedder = SentenceTransformer("intfloat/multilingual-e5-large")
-        
-        texts = [c.content for c in self.chunks]
-        passage_texts = [f"passage: {text}" for text in texts]
-        embeddings = self.embedder.encode(passage_texts, normalize_embeddings=True)
-        
-        dim = embeddings.shape[1]
-        self.faiss_index = faiss.IndexFlatIP(dim)
-        self.faiss_index.add(np.array(embeddings))
-        
+        self.faiss_index = faiss.read_index("faiss_index.bin")
+        with open("chunks.pkl", "rb") as f:
+            self.chunks = pickle.load(f)
         self.id2chunk = {i: c for i, c in enumerate(self.chunks)}
-        
-        # Initialize BM25
-        print("Initializing BM25...")
+    
+        # BM25
         tokenized_corpus = [c.content.split() for c in self.chunks]
         self.bm25 = BM25Okapi(tokenized_corpus)
-        
-        # Initialize OpenAI client
+    
+        # OpenAI client
         self.client = OpenAI(api_key=openai_api_key)
-        
-        # Conversation memory (current session only)
+    
+        # Conversation memory
         self.conversation_history: List[Dict] = []
-        self.max_history_turns = 6  # Keep last 6 turns (3 Q&A pairs)
-        
+        self.max_history_turns = 6
+    
         print("✅ RAG engine ready!")
     
     def detect_language(self, text: str) -> str:

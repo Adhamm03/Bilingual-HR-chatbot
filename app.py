@@ -115,8 +115,8 @@ def ask(payload: AskRequest):
 async def text_to_speech(payload: TTSRequest):
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = client.audio.speech.create(
-        model="tts-1",
-        voice="alloy",
+        model=payload.model,
+        voice=payload.voice,
         input=payload.text
     )
     return StreamingResponse(io.BytesIO(response.content), media_type="audio/mpeg")
