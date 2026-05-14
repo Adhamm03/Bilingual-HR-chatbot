@@ -142,7 +142,8 @@ async def transcribe_audio(audio: UploadFile = File(...)):
             model="whisper-1",
             file=audio_buffer,
             response_format="verbose_json",
-            prompt="This assistant supports both English and Arabic. The user may speak in either language."
+            prompt="""This assistant supports both English and Arabic. The user may speak in either language
+            your answer must be in the same language as the users's ."""
         )
 
         print(f"Detected Language: {result.language}")
